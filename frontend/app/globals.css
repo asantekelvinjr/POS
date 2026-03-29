@@ -1,0 +1,244 @@
+@import "tailwindcss";
+
+/* ── POS System — Colour System ───────────────────────────────────────────── */
+/* Design: Slate-based neutrals + Emerald accent + Amber highlights           */
+/* Aesthetic: Modern, clean, high-contrast, works beautifully in both modes   */
+
+@theme {
+  /* ── Brand / Accent ─────────────────────────────────────────────────────── */
+  --color-accent:           #10b981; /* emerald-500 — primary CTA, active states */
+  --color-accent-hover:     #059669; /* emerald-600 */
+  --color-accent-light:     #d1fae5; /* emerald-100 — accent tints (light mode)  */
+  --color-accent-dark:      #064e3b; /* emerald-900 — accent tints (dark mode)   */
+  --color-accent-foreground:#ffffff;
+
+  /* ── Highlight / Secondary Accent ──────────────────────────────────────── */
+  --color-highlight:        #f59e0b; /* amber-400 — warnings, badges, low stock  */
+  --color-highlight-hover:  #d97706; /* amber-500 */
+  --color-highlight-light:  #fef3c7; /* amber-100 */
+  --color-highlight-dark:   #78350f; /* amber-900 */
+  --color-highlight-foreground: #ffffff;
+
+  /* ── Danger / Error ─────────────────────────────────────────────────────── */
+  --color-danger:           #ef4444; /* red-500  */
+  --color-danger-hover:     #dc2626; /* red-600  */
+  --color-danger-light:     #fee2e2; /* red-100  */
+  --color-danger-foreground:#ffffff;
+
+  /* ── Success ────────────────────────────────────────────────────────────── */
+  --color-success:          #22c55e; /* green-500 */
+  --color-success-light:    #dcfce7; /* green-100 */
+  --color-success-foreground: #ffffff;
+
+  /* ── Info ───────────────────────────────────────────────────────────────── */
+  --color-info:             #3b82f6; /* blue-500  */
+  --color-info-light:       #dbeafe; /* blue-100  */
+  --color-info-foreground:  #ffffff;
+
+  /* ── Light Mode Surface Palette ─────────────────────────────────────────── */
+  --color-bg:               #f8fafc; /* slate-50  — page background             */
+  --color-surface:          #ffffff; /* white     — cards, panels                */
+  --color-surface-2:        #f1f5f9; /* slate-100 — secondary surface            */
+  --color-surface-3:        #e2e8f0; /* slate-200 — hover states, dividers       */
+  --color-border:           #e2e8f0; /* slate-200 */
+  --color-border-strong:    #cbd5e1; /* slate-300 */
+
+  /* ── Light Mode Text Palette ────────────────────────────────────────────── */
+  --color-text-primary:     #0f172a; /* slate-900 */
+  --color-text-secondary:   #475569; /* slate-600 */
+  --color-text-muted:       #94a3b8; /* slate-400 */
+  --color-text-inverse:     #ffffff;
+
+  /* ── Sidebar specific (light) ────────────────────────────────────────────── */
+  --color-sidebar-bg:       #0f172a; /* slate-900 — dark sidebar on light mode   */
+  --color-sidebar-text:     #94a3b8; /* slate-400 */
+  --color-sidebar-text-active: #ffffff;
+  --color-sidebar-item-active: #10b981; /* accent */
+  --color-sidebar-item-hover:  #1e293b; /* slate-800 */
+
+  /* ── Typography ─────────────────────────────────────────────────────────── */
+  --font-sans:   'Plus Jakarta Sans', 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-mono:   'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+  --font-display:'Syne', 'Plus Jakarta Sans', sans-serif;
+
+  /* ── Radius ─────────────────────────────────────────────────────────────── */
+  --radius-sm:  0.375rem; /*  6px */
+  --radius-md:  0.625rem; /* 10px */
+  --radius-lg:  0.875rem; /* 14px */
+  --radius-xl:  1.25rem;  /* 20px */
+
+  /* ── Shadows ─────────────────────────────────────────────────────────────── */
+  --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.06);
+  --shadow-elevated: 0 4px 16px -2px rgb(0 0 0 / 0.10), 0 2px 6px -2px rgb(0 0 0 / 0.06);
+  --shadow-modal: 0 20px 60px -8px rgb(0 0 0 / 0.18), 0 8px 24px -4px rgb(0 0 0 / 0.10);
+}
+
+/* ── Dark Mode Overrides ─────────────────────────────────────────────────── */
+.dark {
+  --color-bg:               #0b1120; /* custom deep navy — richer than slate-950 */
+  --color-surface:          #111827; /* gray-900 */
+  --color-surface-2:        #1f2937; /* gray-800 */
+  --color-surface-3:        #374151; /* gray-700 */
+  --color-border:           #1f2937; /* gray-800 */
+  --color-border-strong:    #374151; /* gray-700 */
+
+  --color-text-primary:     #f1f5f9; /* slate-100 */
+  --color-text-secondary:   #94a3b8; /* slate-400 */
+  --color-text-muted:       #475569; /* slate-600 */
+  --color-text-inverse:     #0f172a;
+
+  --color-accent-light:     #064e3b;
+  --color-highlight-light:  #78350f;
+  --color-danger-light:     #450a0a;
+  --color-success-light:    #052e16;
+  --color-info-light:       #1e3a5f;
+
+  --color-sidebar-bg:       #080e1a;
+  --color-sidebar-text:     #64748b;
+  --color-sidebar-text-active: #f1f5f9;
+  --color-sidebar-item-hover:  #111827;
+
+  --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.3);
+  --shadow-elevated: 0 4px 16px -2px rgb(0 0 0 / 0.4), 0 2px 6px -2px rgb(0 0 0 / 0.3);
+  --shadow-modal: 0 20px 60px -8px rgb(0 0 0 / 0.6), 0 8px 24px -4px rgb(0 0 0 / 0.4);
+}
+
+/* ── Tailwind Utilities — Custom Token Map ────────────────────────────────── */
+/* These map CSS vars to Tailwind-style classes via @layer utilities          */
+
+@layer utilities {
+  /* Backgrounds */
+  .bg-base        { background-color: var(--color-bg); }
+  .bg-surface      { background-color: var(--color-surface); }
+  .bg-surface-2   { background-color: var(--color-surface-2); }
+  .bg-surface-3   { background-color: var(--color-surface-3); }
+  .bg-accent       { background-color: var(--color-accent); }
+  .bg-accent-light { background-color: var(--color-accent-light); }
+  .bg-highlight    { background-color: var(--color-highlight); }
+  .bg-highlight-light { background-color: var(--color-highlight-light); }
+  .bg-danger       { background-color: var(--color-danger); }
+  .bg-danger-light { background-color: var(--color-danger-light); }
+  .bg-success      { background-color: var(--color-success); }
+  .bg-success-light { background-color: var(--color-success-light); }
+  .bg-info         { background-color: var(--color-info); }
+  .bg-info-light   { background-color: var(--color-info-light); }
+  .bg-sidebar      { background-color: var(--color-sidebar-bg); }
+
+  /* Text */
+  .text-primary    { color: var(--color-text-primary); }
+  .text-secondary  { color: var(--color-text-secondary); }
+  .text-muted      { color: var(--color-text-muted); }
+  .text-inverse    { color: var(--color-text-inverse); }
+  .text-accent     { color: var(--color-accent); }
+  .text-highlight  { color: var(--color-highlight); }
+  .text-danger     { color: var(--color-danger); }
+  .text-success    { color: var(--color-success); }
+  .text-info       { color: var(--color-info); }
+  .text-sidebar    { color: var(--color-sidebar-text); }
+  .text-sidebar-active { color: var(--color-sidebar-text-active); }
+
+  /* Borders */
+  .border-base     { border-color: var(--color-border); }
+  .border-strong   { border-color: var(--color-border-strong); }
+  .border-accent   { border-color: var(--color-accent); }
+  .border-danger   { border-color: var(--color-danger); }
+
+  /* Shadows */
+  .shadow-card     { box-shadow: var(--shadow-card); }
+  .shadow-elevated { box-shadow: var(--shadow-elevated); }
+  .shadow-modal    { box-shadow: var(--shadow-modal); }
+
+  /* Radius */
+  .rounded-pos-sm  { border-radius: var(--radius-sm); }
+  .rounded-pos-md  { border-radius: var(--radius-md); }
+  .rounded-pos-lg  { border-radius: var(--radius-lg); }
+  .rounded-pos-xl  { border-radius: var(--radius-xl); }
+
+  /* Transitions */
+  .transition-pos  { transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1); }
+
+  /* POS specific */
+  .card {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+  }
+
+  .card-elevated {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-elevated);
+  }
+
+  .btn-accent {
+    background-color: var(--color-accent);
+    color: var(--color-accent-foreground);
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    transition: all 0.18s ease;
+  }
+  .btn-accent:hover { background-color: var(--color-accent-hover); }
+
+  .btn-ghost {
+    background-color: transparent;
+    color: var(--color-text-secondary);
+    border-radius: var(--radius-md);
+    transition: all 0.18s ease;
+  }
+  .btn-ghost:hover {
+    background-color: var(--color-surface-2);
+    color: var(--color-text-primary);
+  }
+
+  .input-pos {
+    background-color: var(--color-surface-2);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    color: var(--color-text-primary);
+    transition: all 0.18s ease;
+  }
+  .input-pos:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 15%, transparent);
+  }
+  .input-pos::placeholder { color: var(--color-text-muted); }
+}
+
+/* ── Base Styles ──────────────────────────────────────────────────────────── */
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text-primary);
+    min-height: 100vh;
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--color-border-strong); border-radius: 99px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--color-text-muted); }
+
+  /* Focus ring */
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  /* Selection */
+  ::selection {
+    background-color: var(--color-accent-light);
+    color: var(--color-text-primary);
+  }
+}
