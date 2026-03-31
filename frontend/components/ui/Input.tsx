@@ -2,8 +2,7 @@
 
 import { InputHTMLAttributes, ReactNode } from 'react'
 
-// Omit native 'prefix' and 'suffix' to avoid conflicts
-interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'prefix' | 'suffix'> {
+interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string
   error?: string
   hint?: string

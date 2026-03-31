@@ -1,24 +1,24 @@
 'use client'
-
 import { useState, useEffect } from 'react'
 import { apiGet, apiPut } from '@/lib/api'
 
 export interface InventoryItem {
   id: number
-  productId: number
-  productName: string
+  product_id: number
+  product_name: string
   category: string
-  quantityInStock: number
-  reorderLevel: number
-  supplierName?: string
-  supplierPhone?: string
-  lastRestockedAt?: string
+  quantity_in_stock: number
+  reorder_level: number
+  supplier_name: string | null
+  supplier_phone: string | null
+  last_restocked_at: string | null
+  updated_at: string
 }
 
 export function useInventory() {
-  const [inventory, setInventory] = useState<InventoryItem[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [inventory, setInventory]   = useState<InventoryItem[]>([])
+  const [loading, setLoading]       = useState(true)
+  const [error, setError]           = useState<string | null>(null)
 
   useEffect(() => {
     async function fetch() {
@@ -35,27 +35,13 @@ export function useInventory() {
   }, [])
 
   async function adjustStock(productId: number, quantity: number, note?: string) {
-    const updated = await apiPut<InventoryItem>(`/inventory/${productId}/adjust`, {
-      quantity,
-      note,
-    })
-    setInventory(prev =>
-      prev.map(i => i.productId === productId ? updated : i)
-    )
+    const updated = await apiPut<InventoryItem>(`/inventory/product/${productId}/adjust`, { quantity, note })
+    setInventory(prev => prev.map(i => i.product_id === productId ? updated : i))
+    return updated
   }
 
-  const lowStockItems = inventory.filter(
-    i => i.quantityInStock <= i.reorderLevel && i.quantityInStock > 0
-  )
+  const lowStockItems  = inventory.filter(i => i.quantity_in_stock <= i.reorder_level && i.quantity_in_stock > 0)
+  const outOfStockItems = inventory.filter(i => i.quantity_in_stock === 0)
 
-  const outOfStockItems = inventory.filter(i => i.quantityInStock === 0)
-
-  return {
-    inventory,
-    loading,
-    error,
-    lowStockItems,
-    outOfStockItems,
-    adjustStock,
-  }
+  return { inventory, loading, error, lowStockItems, outOfStockItems, adjustStock }
 }

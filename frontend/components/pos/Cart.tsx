@@ -40,7 +40,7 @@ export default function Cart() {
 
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-primary truncate">{item.name}</p>
-            <p className="text-xs text-secondary mt-0.5">GHS {item.price.toFixed(2)} each</p>
+            <p className="text-xs text-secondary mt-0.5">GHS GHS {Number(item.price || 0).toFixed(2)} each</p>
 
             {/* Qty controls */}
             <div className="flex items-center gap-2 mt-2">
@@ -62,7 +62,7 @@ export default function Cart() {
 
           <div className="flex flex-col items-end gap-2 shrink-0">
             <p className="text-sm font-bold text-primary">
-              GHS {(item.price * item.quantity).toFixed(2)}
+              GHS GHS {(Number(item.price || 0) * item.quantity).toFixed(2)}
             </p>
             <button
               onClick={() => removeItem(item.id)}
