@@ -6,7 +6,8 @@ import { apiPost, apiGet } from '@/lib/api'
 interface AuthState {
   user: User | null
   token: string | null
-  login: (email: string, password: string) => Promise<void>
+  rememberMe: boolean
+  login: (email: string, password: string, remember: boolean) => Promise<void>
   logout: () => void
   setUser: (user: User) => void
   fetchMe: () => Promise<void>
@@ -14,18 +15,19 @@ interface AuthState {
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       user: null,
       token: null,
+      rememberMe: false,
 
-      login: async (email: string, password: string) => {
+      login: async (email: string, password: string, remember: boolean) => {
         const data = await apiPost<{ user: User; token: string }>('/auth/login', { email, password })
-        set({ user: data.user, token: data.token })
+        set({ user: data.user, token: data.token, rememberMe: remember })
       },
 
       logout: async () => {
         try { await apiPost('/auth/logout', {}) } catch { /* ignore */ }
-        set({ user: null, token: null })
+        set({ user: null, token: null, rememberMe: false })
         window.location.href = '/login'
       },
 
@@ -38,7 +40,12 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'pos-auth',
-      partialize: (state) => ({ user: state.user, token: state.token }),
+      // Always persist — remember me just controls session UX, not storage
+      partialize: (state) => ({
+        user: state.user,
+        token: state.token,
+        rememberMe: state.rememberMe,
+      }),
     }
   )
 )

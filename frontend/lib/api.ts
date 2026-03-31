@@ -19,37 +19,53 @@ function buildHeaders(extra?: Record<string, string>): Record<string, string> {
 }
 
 async function handleResponse<T>(res: Response): Promise<T> {
+  const json = await res.json().catch(() => ({ message: `HTTP ${res.status}` }))
   if (res.status === 401) {
-    // Token expired — clear auth and redirect to login
-    localStorage.removeItem('pos-auth')
-    window.location.href = '/login'
-    throw new Error('Session expired')
+    // Only redirect if it's truly an auth failure (not just a bad request)
+    // Check we're not already on login page to avoid loops
+    if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
+      localStorage.removeItem('pos-auth')
+      window.location.href = '/login'
+    }
+    throw new Error(json.message || 'Unauthorized')
   }
-  const json = await res.json()
   if (!res.ok) throw new Error(json.message || `HTTP ${res.status}`)
-  return json.data as T
+  // Backend wraps in { success, data } — unwrap it
+  return (json.data !== undefined ? json.data : json) as T
 }
 
 export async function apiGet<T>(path: string): Promise<T> {
-  const res = await fetch(`${BASE_URL}${path}`, { method: 'GET', headers: buildHeaders() })
+  const res = await fetch(`${BASE_URL}${path}`, {
+    method: 'GET',
+    headers: buildHeaders(),
+    // Don't cache auth-sensitive requests
+    cache: 'no-store',
+  })
   return handleResponse<T>(res)
 }
 
 export async function apiPost<T>(path: string, body: unknown): Promise<T> {
   const res = await fetch(`${BASE_URL}${path}`, {
-    method: 'POST', headers: buildHeaders(), body: JSON.stringify(body),
+    method: 'POST',
+    headers: buildHeaders(),
+    body: JSON.stringify(body),
   })
   return handleResponse<T>(res)
 }
 
 export async function apiPut<T>(path: string, body: unknown): Promise<T> {
   const res = await fetch(`${BASE_URL}${path}`, {
-    method: 'PUT', headers: buildHeaders(), body: JSON.stringify(body),
+    method: 'PUT',
+    headers: buildHeaders(),
+    body: JSON.stringify(body),
   })
   return handleResponse<T>(res)
 }
 
 export async function apiDelete<T>(path: string): Promise<T> {
-  const res = await fetch(`${BASE_URL}${path}`, { method: 'DELETE', headers: buildHeaders() })
+  const res = await fetch(`${BASE_URL}${path}`, {
+    method: 'DELETE',
+    headers: buildHeaders(),
+  })
   return handleResponse<T>(res)
 }
