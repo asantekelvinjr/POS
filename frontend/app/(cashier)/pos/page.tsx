@@ -5,14 +5,42 @@ import Cart from '@/components/pos/Cart'
 import BarcodeInput from '@/components/pos/BarcodeInput'
 import PaymentModal from '@/components/pos/PaymentModal'
 import { useCart } from '@/hooks/useCart'
+import { useNotificationStore } from '@/store/notificationStore'
+import { apiGet } from '@/lib/api'
+
+interface LowStockItem { product_name: string; quantity_in_stock: number; reorder_level: number }
 
 export default function POSPage() {
   const [showPayment, setShowPayment] = useState(false)
   const { cartItems, subtotal, tax, total, clearCart, customerId } = useCart()
+  const { addNotification } = useNotificationStore()
 
-  function handlePaymentSuccess(saleId: string) {
+  async function handlePaymentSuccess(saleId: string) {
     setShowPayment(false)
     clearCart()
+
+    // Check for low/out of stock items and notify
+    try {
+      const lowItems = await apiGet<LowStockItem[]>('/inventory/low-stock')
+      if (lowItems.length > 0) {
+        addNotification({
+          type: 'low_stock',
+          title: `${lowItems.length} item${lowItems.length > 1 ? 's' : ''} running low`,
+          message: lowItems.slice(0, 3).map(i => `${i.product_name} (${i.quantity_in_stock} left)`).join(', '),
+          link: '/inventory',
+        })
+      }
+      const outItems = await apiGet<LowStockItem[]>('/inventory/out-of-stock')
+      for (const item of outItems.slice(0, 3)) {
+        addNotification({
+          type: 'out_of_stock',
+          title: `${item.product_name} is out of stock`,
+          message: 'Restock needed immediately',
+          link: '/inventory',
+        })
+      }
+    } catch { /* silent */ }
+
     window.location.href = `/pos/receipt/${saleId}`
   }
 
@@ -20,7 +48,7 @@ export default function POSPage() {
     <div className="h-[calc(100vh-4rem)] flex flex-col lg:flex-row gap-0 overflow-hidden -m-6">
       {/* Left: Product area */}
       <div className="flex-1 flex flex-col overflow-hidden bg-base">
-        <div className="flex items-center gap-3 px-6 py-4 bg-surface border-b border-base">
+        <div className="flex items-center gap-3 px-6 py-4 border-b border-base" style={{ backgroundColor: 'var(--color-surface)' }}>
           <BarcodeInput />
           <ProductSearch />
         </div>
@@ -30,7 +58,8 @@ export default function POSPage() {
       </div>
 
       {/* Right: Cart panel */}
-      <div className="w-full lg:w-96 flex flex-col border-t lg:border-t-0 lg:border-l border-base" style={{ backgroundColor: 'var(--color-surface)' }}>
+      <div className="w-full lg:w-96 flex flex-col border-t lg:border-t-0 lg:border-l border-base"
+        style={{ backgroundColor: 'var(--color-surface)' }}>
         <div className="px-5 py-4 border-b border-base flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <svg className="w-5 h-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
@@ -38,18 +67,21 @@ export default function POSPage() {
             </svg>
             <h2 className="font-semibold text-primary">Cart</h2>
             {cartItems.length > 0 && (
-              <span className="text-xs font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: 'var(--color-accent)', color: 'white' }}>
+              <span className="text-xs font-bold px-2 py-0.5 rounded-full text-white" style={{ backgroundColor: 'var(--color-accent)' }}>
                 {cartItems.length}
               </span>
             )}
           </div>
           {cartItems.length > 0 && (
-            <button onClick={clearCart} className="text-xs text-danger hover:text-danger transition-pos font-medium">Clear all</button>
+            <button onClick={clearCart} className="text-xs text-danger font-medium hover:underline transition-pos">
+              Clear all
+            </button>
           )}
         </div>
 
         <div className="flex-1 overflow-y-auto px-5 py-4"><Cart /></div>
 
+        {/* Totals & checkout */}
         <div className="px-5 py-5 border-t border-base space-y-3">
           <div className="space-y-2 text-sm">
             <div className="flex justify-between text-secondary">
@@ -62,7 +94,9 @@ export default function POSPage() {
             </div>
             <div className="flex justify-between pt-2 border-t border-base">
               <span className="font-bold text-base text-primary">Total</span>
-              <span className="font-bold text-lg" style={{ color: 'var(--color-accent)' }}>GHS {total.toFixed(2)}</span>
+              <span className="font-bold text-lg" style={{ color: 'var(--color-accent)' }}>
+                GHS {total.toFixed(2)}
+              </span>
             </div>
           </div>
 
@@ -77,7 +111,10 @@ export default function POSPage() {
 
           <div className="flex gap-2">
             {['Cash', 'MoMo', 'Card'].map(m => (
-              <span key={m} className="flex-1 text-center text-xs py-1.5 rounded-pos-sm text-muted bg-surface-2 font-medium">{m}</span>
+              <span key={m} className="flex-1 text-center text-xs py-1.5 rounded-pos-sm font-medium"
+                style={{ color: 'var(--color-text-muted)', backgroundColor: 'var(--color-surface-2)' }}>
+                {m}
+              </span>
             ))}
           </div>
         </div>
@@ -86,6 +123,8 @@ export default function POSPage() {
       {showPayment && (
         <PaymentModal
           total={total}
+          subtotal={subtotal}
+          tax={tax}
           items={cartItems}
           customerId={customerId}
           onSuccess={handlePaymentSuccess}
